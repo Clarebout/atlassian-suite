@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jira-configmap
+  labels:
+{{ include "atlassian-jira-software.labels" . | indent 4 }}
+data:
+  ATL_DB_DRIVER: {{ .Values.envVars.jira.atlDbDriver | quote }}
+  ATL_DB_TYPE: {{ .Values.envVars.jira.atlDbType | quote }}
+  ATL_JDBC_PASSWORD: {{ .Values.envVars.jira.atlJdbcPassword | quote }}
+  ATL_JDBC_URL: {{ .Values.envVars.jira.atlJdbcUrl | quote }}
+  ATL_JDBC_USER: {{ .Values.envVars.jira.atlJdbcUser | quote }}
+  ATL_PROXY_NAME: {{ .Values.envVars.jira.atlProxyName | quote }}
+  ATL_PROXY_PORT: {{ .Values.envVars.jira.atlProxyPort | quote }}
+  ATL_TOMCAT_SCHEME: {{ .Values.envVars.jira.atlTomcatScheme | quote }}
+  JVM_MAXIMUM_MEMORY: {{ .Values.envVars.jira.jvmMaximumMemory | quote }}
+  JVM_MINIMUM_MEMORY: {{ .Values.envVars.jira.jvmMinimumMemory | quote }}
+  JVM_RESERVED_CODE_CACHE_SIZE: {{ .Values.envVars.jira.jvmReservedCodeCacheSize | quote }}
+  JVM_SUPPORT_RECOMMENDED_ARGS : {{ .Values.envVars.jira.jvmSupportRecommendedArgs | quote }}

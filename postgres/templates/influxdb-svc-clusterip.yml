@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+{{ include "datapersisters.labels" . | indent 4 }}
+  name: influxdb
+spec:
+  ports:
+  - name: 8086tcp02
+    port: 8086
+    protocol: TCP
+    targetPort: 8086
+  selector:
+{{ include "datapersisters.matchLabels" . | indent 4 }}
+    component: influxdb
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+{{ include "atlassian-postgres.labels" . | indent 4 }}
+    component: postgres
+  name: postgres
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+{{ include "atlassian-postgres.matchLabels" . | indent 6 }}
+      component: postgres
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{ include "atlassian-postgres.labels" . | indent 8 }}
+        component: postgres
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.envVars.postgres.postgresPassword }}
+        - name: PGDATA
+          value: {{ .Values.envVars.postgres.postgresSubDir }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        name: postgres
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        resources: {}
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: {{ .Values.persistence.postgres.name }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: {{ .Values.persistence.postgres.name }}
+        persistentVolumeClaim:
+          claimName: postgres-data-pvc

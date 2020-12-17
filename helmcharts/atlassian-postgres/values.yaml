@@ -1,0 +1,46 @@
+image:
+  repository: postgres
+  tag: 9.6
+  pullPolicy: IfNotPresent
+
+persistence:
+  enabled: true
+  postgres:
+    name: postgres-data-pv-dev
+    persistentVolume:
+      persistentVolumeReclaimPolicy: Retain
+      capacity:
+        storage: 10Gi
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: thin-disk
+      volumeMode: Filesystem
+      vsphereVolume:
+        volumePath: "[DatastoreGRP] staticvols/postgres-data-dev.vmdk"
+        fsType: ext4
+    persistentVolumeClaim: 
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: thin-disk
+      volumeMode: Filesystem
+      volumeName: postgres-data-pv-dev
+      resources:
+        requests:
+          storage: 10Gi
+
+envVars:
+  postgres:
+    atlDbDriver: org.postgresql.Driver
+    atlDbType: postgres72
+    atlJdbcUrl: jdbc:postgresql://postgres.postgres:5432/postgres
+    postgresPassword: jiradbpwgres
+    postgresSubDir: /var/lib/postgresql/data/pgdata
+    atlProxyName: support-dev.clarebout.com
+    atlProxyName: 443
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

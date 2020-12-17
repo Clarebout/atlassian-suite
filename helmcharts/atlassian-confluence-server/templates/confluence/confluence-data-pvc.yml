@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: confluence-data-pvc
+  annotations:
+    helm.sh/resource-policy: "keep"
+spec:
+{{ toYaml .Values.persistence.confluenceData.persistentVolumeClaim | indent 2 }}

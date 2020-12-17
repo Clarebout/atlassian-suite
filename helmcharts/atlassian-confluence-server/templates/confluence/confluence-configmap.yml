@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: confluence-configmap
+  labels:
+{{ include "atlassian-confluence-server.labels" . | indent 4 }}
+data:
+  ATL_DB_TYPE: {{ .Values.envVars.confluence.atlDbType | quote }}
+  ATL_JDBC_PASSWORD: {{ .Values.envVars.confluence.atlJdbcPassword | quote }}
+  ATL_JDBC_URL: {{ .Values.envVars.confluence.atlJdbcUrl | quote }}
+  ATL_JDBC_USER: {{ .Values.envVars.confluence.atlJdbcUser | quote }}
+  ATL_PROXY_NAME: {{ .Values.envVars.confluence.atlProxyName | quote }}
+  ATL_PROXY_PORT: {{ .Values.envVars.confluence.atlProxyPort | quote }}
+  ATL_TOMCAT_SCHEME: {{ .Values.envVars.confluence.atlTomcatScheme | quote }}
+  JVM_MAXIMUM_MEMORY: {{ .Values.envVars.confluence.jvmMaximumMemory | quote }}
+  JVM_MINIMUM_MEMORY: {{ .Values.envVars.confluence.jvmMinimumMemory | quote }}
+  JVM_RESERVED_CODE_CACHE_SIZE: {{ .Values.envVars.confluence.jvmReservedCodeCacheSize | quote }}
+  JVM_SUPPORT_RECOMMENDED_ARGS : {{ .Values.envVars.confluence.jvmSupportRecommendedArgs | quote }}
+  X_PROXY_NAME: {{ .Values.envVars.confluence.xProxyName | quote }}
+  X_PROXY_PORT: {{ .Values.envVars.confluence.xProxyPort | quote }}
+  X_PROXY_SCHEME: {{ .Values.envVars.confluence.xProxyScheme | quote }}
+  CONFLUENCE_CONFIG_PROPERTY1: confluence.setup.server.id
+  CONFLUENCE_CONFIG_VALUE1: BJY9-PJXQ-2QY3-TQ0H
+  ATL_LICENSE_KEY : "AAABPg0ODAoPeNptkFFrwjAUhd/zKwJ72R6UtlORQmCjLcNNq0znXvZyjVcXliZym5T575fWChvsI RBy7rnfObl5xz1/9obHEY+n6f0oDZcs3/AkSiJW+mqHtDy81Ui1GEcsx1qSOjlljcisOWiPRiK/X SM1SHd8HPFu9iPlma0qJKlA87mSaGpkGSG01hwcihYwiCaDOGZhkwPpSqhQvGCjDH+yWAESMhkgw 6CpBoUj3z+sHZBDEgfQ7dqLvViA0uKr9Q+Pvf9BaiDcWe+G0lasaED7LkJv7bb18TbnE3YRsuViU bxms8c50xdpGyq1poQFhnFoILQuvk+KztcucdslmbAlHcGo+gLJrnS+sg6cxZqXW7YuShHOIB4lc TQdj1gfYJaL+Sz/T/mF8karSjncs5Un+Qk1/vnNkOAHMKacazAsAhR3Q54hU9oQBX22qlNwxmeCL UjXvgIUQxF+wEcUXg4Liwmj2hfWq/pw20A=X02fr"

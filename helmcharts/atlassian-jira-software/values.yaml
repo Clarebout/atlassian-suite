@@ -1,0 +1,79 @@
+image:
+  repository: atlassian/jira-software
+  tag: 8.13.2
+  pullPolicy: IfNotPresent
+
+
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  jira:
+    ingress: 
+    - ip: 10.11.33.14
+    - ip: 10.11.33.15
+    - ip: 10.11.33.16
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  host: support-dev.clarebout.com
+  hosts:
+  - support-dev.clarebout.com
+  tls:
+  - secretName: clarebout-tls
+    hosts:
+      - jira.clarebout.com
+
+persistence:
+  enabled: true
+  jiraData:
+    name: jira-data-pv-dev
+    persistentVolume:
+      persistentVolumeReclaimPolicy: Retain
+      capacity:
+        storage: 40Gi
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: thin-disk
+      volumeMode: Filesystem
+      vsphereVolume:
+        volumePath: "[DatastoreGRP] staticvols/jira-data-dev.vmdk"
+        fsType: ext4
+    persistentVolumeClaim: 
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: thin-disk
+      volumeMode: Filesystem
+      volumeName: jira-data-pv-dev
+      resources:
+        requests:
+          storage: 40Gi
+
+envVars:
+  jira:
+    atlProxyName: support-dev.clarebout.com
+    atlProxyPort: 443
+    atlJdbcUser: jiradbuser
+    atlJdbcPassword: jiradbpw
+    atlDbDriver: org.postgresql.Driver
+    atlDbType: postgres72
+    atlJdbcUrl: jdbc:postgresql://postgres.postgres:5432/jiradb
+    atlTomcatScheme: https
+    jvmMaximumMemory: 8192m
+    jvmMinimumMemory: 8192m
+    jvmReservedCodeCacheSize: 512m
+    jvmSupportRecommendedArgs: -Datlassian.mail.senddisabled=true -Datlassian.mail.fetchdisabled=true -Datlassian.mail.popdisabled=true
+    xProxyName: support-dev.clarebout.com
+    xProxyPort: 443
+    xProxyScheme: https
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

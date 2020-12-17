@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+{{ include "atlassian-confluence-server.labels" . | indent 4 }}
+    component: confluence
+  name: confluence
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+{{ include "atlassian-confluence-server.matchLabels" . | indent 6 }}
+      component: confluence
+  template:
+    metadata:
+      labels:
+{{ include "atlassian-confluence-server.labels" . | indent 8 }}
+        component: confluence
+    spec:
+      containers:
+        - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          name: confluence
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ATL_DB_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: ATL_DB_TYPE
+            - name: ATL_JDBC_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: ATL_JDBC_PASSWORD
+            - name: ATL_JDBC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: ATL_JDBC_URL
+            - name: ATL_JDBC_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: ATL_JDBC_USER
+            - name: ATL_PROXY_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: ATL_PROXY_NAME
+            - name: ATL_PROXY_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: ATL_PROXY_PORT
+            - name: ATL_TOMCAT_SCHEME
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: ATL_TOMCAT_SCHEME
+            - name: JVM_MAXIMUM_MEMORY
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: JVM_MAXIMUM_MEMORY
+            - name: JVM_MINIMUM_MEMORY
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: JVM_MINIMUM_MEMORY
+            - name: JVM_RESERVED_CODE_CACHE_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: JVM_RESERVED_CODE_CACHE_SIZE
+            - name: JVM_SUPPORT_RECOMMENDED_ARGS
+              valueFrom:
+                configMapKeyRef:
+                  name: confluence-configmap
+                  key: JVM_SUPPORT_RECOMMENDED_ARGS
+          ports:
+            - name: http
+              containerPort: 8090
+              protocol: TCP
+            - name: p8091
+              containerPort: 8091
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 3
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: {{ .Values.persistence.confluenceData.name }}
+              mountPath: /var/atlassian/application-data/confluence
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: {{ .Values.persistence.confluenceData.name }}
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: confluence-data-pvc
+        {{- else }}
+          emptyDir: {}
+        {{- end -}}

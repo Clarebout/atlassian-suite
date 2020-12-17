@@ -1,0 +1,103 @@
+image:
+  repository: atlassian/confluence-server
+  tag: 7.1.0
+  pullPolicy: IfNotPresent
+
+confluence:
+  reverseProxyHost: confluence-dev.clarebout.com
+  reverseProxyPort: 443
+  reverseProxyScheme: https
+  javaHeapSize: 1024m
+  javaMemoryOptions: "-XX:MaxMetaspaceSize=512m -XX:MaxDirectMemorySize=10m"
+  javaOptions: ""
+
+ingress:
+  enabled: true
+  confluence:
+    ingress: 
+    - ip: 10.11.33.14
+    - ip: 10.11.33.15
+    - ip: 10.11.33.16
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  host: confluence-dev.clarebout.com
+  hosts:
+  - confluence-dev.clarebout.com
+  tls:
+  - secretName: clarebout-tls
+    hosts:
+      - confluence-dev
+
+persistence:
+  enabled: true
+  confluenceData:
+    name: confluence-data-pv-dev
+    persistentVolume:
+      persistentVolumeReclaimPolicy: Retain
+      capacity:
+        storage: 50Gi
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: thin-disk
+      volumeMode: Filesystem
+      vsphereVolume:
+        volumePath: "[DatastoreGRP] staticvols/confluence-data-devv.vmdk"
+        fsType: ext4
+    persistentVolumeClaim: 
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: thin-disk
+      volumeMode: Filesystem
+      volumeName: confluence-data-pv-dev
+      resources:
+        requests:
+          storage: 50Gi
+  postgres:
+    name: postgres-data-pv-dev
+    persistentVolume:
+      persistentVolumeReclaimPolicy: Retain
+      capacity:
+        storage: 10Gi
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: thin-disk
+      volumeMode: Filesystem
+      vsphereVolume:
+        volumePath: "[DatastoreGRP] staticvols/postgres-confluence-data-dev.vmdk"
+        fsType: ext4
+    persistentVolumeClaim: 
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: thin-disk
+      volumeMode: Filesystem
+      volumeName: postgres-data-pv-dev
+      resources:
+        requests:
+          storage: 10Gi
+
+envVars:
+  confluence:
+    atlProxyName: confluence-dev.clarebout.com
+    atlProxyPort: 443
+    atlJdbcUser: confluencedbuser
+    atlJdbcPassword: confluencedbpw
+    atlDbDriver: org.postgresql.Driver
+    atlDbType: postgresql
+    atlJdbcUrl: jdbc:postgresql://postgres.postgres:5432/confluencedb
+    atlTomcatScheme: https
+    jvmMaximumMemory: 8192m
+    jvmMinimumMemory: 8192m
+    jvmReservedCodeCacheSize: 512m
+    jvmSupportRecommendedArgs: -Datlassian.mail.senddisabled=true -Datlassian.mail.fetchdisabled=true -Datlassian.mail.popdisabled=true
+    xProxyName: support-dev.clarebout.com
+    xProxyPort: 443
+    xProxyScheme: https
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

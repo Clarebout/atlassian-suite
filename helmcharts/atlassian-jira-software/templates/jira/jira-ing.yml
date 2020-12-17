@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+{{ include "atlassian-jira-software.labels" . | indent 4 }}
+  name: jira-ing
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - backend:
+          serviceName: jira
+          servicePort: 8080
+  tls:
+  - hosts:
+{{ toYaml .Values.ingress.hosts | indent 6 }}
+    secretName: clarebout-tls
+status:
+  loadBalancer:
+    ingress:
+{{ toYaml .Values.ingress.jira.ingress | indent 4 }}

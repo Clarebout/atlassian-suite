@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.persistence.jiraData.name }}
+  annotations:
+    helm.sh/resource-policy: "keep"
+spec:
+{{ toYaml .Values.persistence.jiraData.persistentVolume | indent 2 }}

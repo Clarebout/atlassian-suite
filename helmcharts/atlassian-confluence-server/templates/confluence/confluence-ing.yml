@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+{{ include "atlassian-confluence-server.labels" . | indent 4 }}
+  name: confluence-ing
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - backend:
+          serviceName: confluence
+          servicePort: 8090
+  tls:
+  - hosts:
+{{ toYaml .Values.ingress.hosts | indent 6 }}
+    secretName: clarebout-tls
+status:
+  loadBalancer:
+    ingress:
+{{ toYaml .Values.ingress.confluence.ingress | indent 4 }}
